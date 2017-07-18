@@ -1,2 +1,4 @@
-# pydag
+pydag
+=====
+
 A robust DAG implementation
