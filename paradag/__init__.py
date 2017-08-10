@@ -120,20 +120,48 @@ class Dag(object):
         return self.__endpoints(self.outdegree)
 
 
-def topo_sort(dag):
-    dag_temp = copy.deepcopy(dag)
 
-    sorted_vertice = []
-    vertice_zero_indegree = dag_temp.all_starts()
+class RandomSelector(object):
+    def select(self, running, idle):
+        return set([random.choice(list(idle))])
+
+class ShuffleSelector(object):
+    def select(self, running, idle):
+        idle_list = list(idle)
+        random.shuffle(idle_list)
+        return set(idle_list)
+
+
+class DirectProcessor(object):
+    def process(self, vertice):
+        return list(vertice)
+
+
+def dag_run(dag, selector=ShuffleSelector(), processor=DirectProcessor()):
+    indegree_dict = {}
+    for vertex in dag.vertice():
+        indegree_dict[vertex] = dag.indegree(vertex)
+
+    vertice_final = []
+    vertice_processing = set()
+    vertice_zero_indegree = dag.all_starts()
 
     while vertice_zero_indegree:
-        vertex = random.choice(list(vertice_zero_indegree))
-        sorted_vertice.append(vertex)
-        vertice_zero_indegree.remove(vertex)
+        vertice_to_run = selector.select(vertice_processing, vertice_zero_indegree-vertice_processing)
 
-        for v_to in dag_temp.successors(vertex).copy():
-            dag_temp.remove_edge(vertex, v_to)
-            if dag_temp.indegree(v_to) == 0:
-                vertice_zero_indegree.add(v_to)
+        vertice_processed_list = processor.process(vertice_to_run)
+        vertice_processed = set(vertice_processed_list)
 
-    return sorted_vertice
+        vertice_processing |= vertice_to_run
+        vertice_processing -= vertice_processed
+
+        vertice_final += vertice_processed_list
+        vertice_zero_indegree -= vertice_processed
+
+        for vertex in vertice_processed:
+            for v_to in dag.successors(vertex).copy():
+                indegree_dict[v_to] -= 1
+                if indegree_dict[v_to] == 0:
+                    vertice_zero_indegree.add(v_to)
+
+    return vertice_final

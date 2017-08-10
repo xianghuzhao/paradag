@@ -1,7 +1,7 @@
 import pytest
 
 from paradag import Dag
-from paradag import topo_sort
+from paradag import dag_run
 from paradag import DagVertexNotFoundError, DagEdgeNotFoundError, DagCycleError
 
 @pytest.fixture(scope='module')
@@ -55,14 +55,14 @@ def test_starts(dag):
 def test_terminals(dag):
     assert dag.all_terminals() == set(['sg', 679, 15])
 
-def test_topo_sort(dag):
+def test_topo_sort_by_dag_run(dag):
     for i in range(1000):
-        sorted_vertice = topo_sort(dag)
-        assert set(sorted_vertice) == dag.vertice()
-        assert sorted_vertice.index(3) < sorted_vertice.index('c')
-        assert sorted_vertice.index('c') < sorted_vertice.index('5ef')
-        assert sorted_vertice.index('c') < sorted_vertice.index(15)
-        assert sorted_vertice.index('c') < sorted_vertice.index('sg')
-        assert sorted_vertice.index(678) < sorted_vertice.index(679)
-        assert sorted_vertice.index(3) < sorted_vertice.index('5ef')
-        assert sorted_vertice.index(678) < sorted_vertice.index(679)
+        vertice_sorted = dag_run(dag)
+        assert set(vertice_sorted) == dag.vertice()
+        assert vertice_sorted.index(3)   < vertice_sorted.index('c')
+        assert vertice_sorted.index('c') < vertice_sorted.index('5ef')
+        assert vertice_sorted.index('c') < vertice_sorted.index(15)
+        assert vertice_sorted.index('c') < vertice_sorted.index('sg')
+        assert vertice_sorted.index(678) < vertice_sorted.index(679)
+        assert vertice_sorted.index(3)   < vertice_sorted.index('5ef')
+        assert vertice_sorted.index(678) < vertice_sorted.index(679)
