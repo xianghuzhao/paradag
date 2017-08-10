@@ -133,7 +133,10 @@ class ShuffleSelector(object):
 
 class DirectProcessor(object):
     def process(self, vertice, executor):
-        return {vertex: executor.execute(executor.param(vertex)) for vertex in vertice}
+        result_dict = {}
+        for vertex in vertice:
+            result_dict[vertex] = executor.execute(executor.param(vertex))
+        return result_dict
 
 
 class NullExecutor(object):

@@ -11,6 +11,8 @@ python:
   - "pypy"
   - "pypy3"
 
-install: pip install -e .
+install:
+  - pip install -e .
+  - pip install pytest
 
 script: pytest
