@@ -6,18 +6,18 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'pydag', 'VERSION')) as version_file:
+with open(os.path.join(here, 'paradag', 'VERSION')) as version_file:
     version = version_file.read().strip()
 
 with open(os.path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 setup(
-    name = 'pydag',
+    name = 'paradag',
     version = version,
     description = 'A robust DAG implementation',
     long_description = long_description,
-    url = 'https://github.com/xianghuzhao/pydag',
+    url = 'https://github.com/xianghuzhao/paradag',
     author = 'Xianghu Zhao',
     author_email = 'xianghuzhao@gmail.com',
     license = 'MIT',

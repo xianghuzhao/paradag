@@ -1,4 +1,4 @@
-pydag
-=====
+paradag
+=======
 
-A robust DAG implementation
+A robust DAG implementation for parallel execution
