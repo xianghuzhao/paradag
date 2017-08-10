@@ -1,5 +1,4 @@
 import random
-import copy
 
 
 class DagVertexNotFoundError(Exception):
@@ -133,11 +132,22 @@ class ShuffleSelector(object):
 
 
 class DirectProcessor(object):
-    def process(self, vertice):
-        return list(vertice)
+    def process(self, vertice, executor):
+        return {vertex: executor.execute(executor.param(vertex)) for vertex in vertice}
 
 
-def dag_run(dag, selector=ShuffleSelector(), processor=DirectProcessor()):
+class NullExecutor(object):
+    def param(self, vertex):
+        return None
+
+    def execute(self, param_vertex):
+        return None
+
+    def deliver(self, vertex, result):
+        pass
+
+
+def dag_run(dag, selector=RandomSelector(), processor=DirectProcessor(), executor=NullExecutor()):
     indegree_dict = {}
     for vertex in dag.vertice():
         indegree_dict[vertex] = dag.indegree(vertex)
@@ -149,17 +159,19 @@ def dag_run(dag, selector=ShuffleSelector(), processor=DirectProcessor()):
     while vertice_zero_indegree:
         vertice_to_run = selector.select(vertice_processing, vertice_zero_indegree-vertice_processing)
 
-        vertice_processed_list = processor.process(vertice_to_run)
-        vertice_processed = set(vertice_processed_list)
+        vertice_processed_dict = processor.process(vertice_to_run, executor)
+        vertice_processed = set(vertice_processed_dict.keys())
 
         vertice_processing |= vertice_to_run
         vertice_processing -= vertice_processed
 
-        vertice_final += vertice_processed_list
+        vertice_final += list(vertice_processed)
         vertice_zero_indegree -= vertice_processed
 
-        for vertex in vertice_processed:
-            for v_to in dag.successors(vertex).copy():
+        for vertex, result in vertice_processed_dict.items():
+            for v_to in dag.successors(vertex):
+                executor.deliver(v_to, result)
+
                 indegree_dict[v_to] -= 1
                 if indegree_dict[v_to] == 0:
                     vertice_zero_indegree.add(v_to)
