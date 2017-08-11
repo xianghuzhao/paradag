@@ -1,9 +1,20 @@
 import threading
 
 try:
-    from Queue import Queue
+    from Queue import Queue, Empty
 except ImportError:
-    from queue import Queue
+    from queue import Queue, Empty
+
+
+def dag_thread(dag_queue, vertex, executor, param):
+    try:
+        result = executor.execute(param)
+        good = True
+    except Exception as e:
+        result = str(e)
+        good = False
+    finally:
+        dag_queue.put((vertex, good, result))
 
 
 class MultiThreadProcessor(object):
@@ -13,29 +24,21 @@ class MultiThreadProcessor(object):
         self.__dag_threads = {}
         self.__dag_queue = Queue()
 
-    def process(self, vertice):
-        return vertice
-
-    def __wait_vertice(self, vertice_to_run):
+    def __start_vertice(self, vertice, executor):
         for vertex in vertice:
-            self.__dag_threads[vertex] = DagThread(self.__dag_queue, vertex)
+            param_vertex = executor.param(vertex)
+            args = [self.__dag_queue, vertex, executor, param_vertex]
+            self.__dag_threads[vertex] = threading.Thread(target=dag_thread, args=args)
             self.__dag_threads[vertex].start()
 
+    def __wait_vertice(self):
         try:
-            item = self.__queue_unit.get(timeout=self.__timeout)
-        except Queue.Empty:
-            pass
+            item = self.__dag_queue.get(timeout=self.__timeout)
+            self.__dag_threads[item[0]].join()
+            return [item]
+        except Empty:
+            return []
 
-
-class VertexCmd(object):
-    @staticmethod
-    def select_vertice(running, idle):
-        return idle
-
-    def __init__(self):
-        pass
-
-class DagThread(threading.Thread):
-    def __init__(self, dag_queue, vertex):
-        self.__dag_queue = dag_queue
-        self.__vertex = vertex
+    def process(self, vertice, executor):
+        self.__start_vertice(vertice, executor)
+        return self.__wait_vertice()

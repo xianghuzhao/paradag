@@ -40,8 +40,8 @@ class DagData(object):
 
 
 class Dag(object):
-    def __init__(self, data=DagData()):
-        self.__data = data
+    def __init__(self):
+        self.__data = DagData()
 
     def __validate_vertex(self, *vertice):
         for vertex in vertice:
@@ -120,23 +120,28 @@ class Dag(object):
 
 
 
+class SingleSelector(object):
+    def select(self, running, idle):
+        return [next(iter(idle))]
+
+class FullSelector(object):
+    def select(self, running, idle):
+        return list(idle)
+
 class RandomSelector(object):
     def select(self, running, idle):
-        return set([random.choice(list(idle))])
+        return [random.choice(list(idle))]
 
 class ShuffleSelector(object):
     def select(self, running, idle):
         idle_list = list(idle)
         random.shuffle(idle_list)
-        return set(idle_list)
+        return idle_list
 
 
 class DirectProcessor(object):
     def process(self, vertice, executor):
-        result_dict = {}
-        for vertex in vertice:
-            result_dict[vertex] = executor.execute(executor.param(vertex))
-        return result_dict
+        return [(vertex, True, executor.execute(executor.param(vertex))) for vertex in vertice]
 
 
 class NullExecutor(object):
@@ -146,15 +151,29 @@ class NullExecutor(object):
     def execute(self, param_vertex):
         return None
 
+    def report(self, vertex, result):
+        pass
+
     def deliver(self, vertex, result):
         pass
 
+    def abort(self, vertice):
+        pass
 
-def dag_run(dag, selector=RandomSelector(), processor=DirectProcessor(), executor=NullExecutor()):
+
+def dag_run(dag, selector=None, processor=None, executor=None, abort_on_failure=False):
+    if selector is None:
+        selector = FullSelector()
+    if processor is None:
+        processor = DirectProcessor()
+    if executor is None:
+        executor = NullExecutor()
+
     indegree_dict = {}
     for vertex in dag.vertice():
         indegree_dict[vertex] = dag.indegree(vertex)
 
+    stop_processing = False
     vertice_final = []
     vertice_processing = set()
     vertice_zero_indegree = dag.all_starts()
@@ -162,16 +181,24 @@ def dag_run(dag, selector=RandomSelector(), processor=DirectProcessor(), executo
     while vertice_zero_indegree:
         vertice_to_run = selector.select(vertice_processing, vertice_zero_indegree-vertice_processing)
 
-        vertice_processed_dict = processor.process(vertice_to_run, executor)
-        vertice_processed = set(vertice_processed_dict.keys())
+        vertice_processed_result = processor.process(vertice_to_run, executor)
+        vertice_processed = [result[0] for result in vertice_processed_result]
 
-        vertice_processing |= vertice_to_run
-        vertice_processing -= vertice_processed
+        vertice_processing |= set(vertice_to_run)
+        vertice_processing -= set(vertice_processed)
 
-        vertice_final += list(vertice_processed)
-        vertice_zero_indegree -= vertice_processed
+        vertice_final += vertice_processed
+        vertice_zero_indegree -= set(vertice_processed)
 
-        for vertex, result in vertice_processed_dict.items():
+        for vertex, good, result in vertice_processed_result:
+            executor.report(vertex, result)
+
+            if abort_on_failure and not good:
+                stop_processing = True
+                executor.abort(vertice_processing)
+            if stop_processing:
+                break
+
             for v_to in dag.successors(vertex):
                 executor.deliver(v_to, result)
 
