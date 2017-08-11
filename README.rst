@@ -13,4 +13,7 @@ paradag
    :target: https://codeclimate.com/github/xianghuzhao/paradag
    :alt: Code Climate
 
-A robust DAG implementation for parallel execution
+A robust DAG package for easy parallel execution.
+
+paradag is implemented in pure python and totally independent of any
+other packages.
