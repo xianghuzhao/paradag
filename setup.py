@@ -25,9 +25,8 @@ setup(
     classifiers = [
         'Development Status :: 2 - Pre-Alpha',
 
-        'Intended Audience :: Science/Research',
-        'Topic :: Scientific/Engineering :: Physics',
-        'Topic :: System :: Software Distribution',
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Libraries :: Python Modules',
 
         'License :: OSI Approved :: MIT License',
 
@@ -35,6 +34,7 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
