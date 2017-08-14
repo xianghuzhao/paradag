@@ -10,6 +10,9 @@ class DagEdgeNotFoundError(Exception):
 class DagCycleError(Exception):
     pass
 
+class VertexExecutionError(Exception):
+    pass
+
 
 class DagData(object):
     def __init__(self):
@@ -139,9 +142,9 @@ class ShuffleSelector(object):
         return idle_list
 
 
-class DirectProcessor(object):
+class NullProcessor(object):
     def process(self, vertice, executor):
-        return [(vertex, True, executor.execute(executor.param(vertex))) for vertex in vertice]
+        return [(vertex, None) for vertex in vertice]
 
 
 class NullExecutor(object):
@@ -161,11 +164,11 @@ class NullExecutor(object):
         pass
 
 
-def dag_run(dag, selector=None, processor=None, executor=None, abort_on_failure=False):
+def dag_run(dag, selector=None, processor=None, executor=None):
     if selector is None:
         selector = FullSelector()
     if processor is None:
-        processor = DirectProcessor()
+        processor = NullProcessor()
     if executor is None:
         executor = NullExecutor()
 
@@ -173,7 +176,6 @@ def dag_run(dag, selector=None, processor=None, executor=None, abort_on_failure=
     for vertex in dag.vertice():
         indegree_dict[vertex] = dag.indegree(vertex)
 
-    stop_processing = False
     vertice_final = []
     vertice_processing = set()
     vertice_zero_indegree = dag.all_starts()
@@ -181,8 +183,8 @@ def dag_run(dag, selector=None, processor=None, executor=None, abort_on_failure=
     while vertice_zero_indegree:
         vertice_to_run = selector.select(vertice_processing, vertice_zero_indegree-vertice_processing)
 
-        vertice_processed_result = processor.process(vertice_to_run, executor)
-        vertice_processed = [result[0] for result in vertice_processed_result]
+        vertice_processed_results = processor.process(vertice_to_run, executor)
+        vertice_processed = [result[0] for result in vertice_processed_results]
 
         vertice_processing |= set(vertice_to_run)
         vertice_processing -= set(vertice_processed)
@@ -190,14 +192,8 @@ def dag_run(dag, selector=None, processor=None, executor=None, abort_on_failure=
         vertice_final += vertice_processed
         vertice_zero_indegree -= set(vertice_processed)
 
-        for vertex, good, result in vertice_processed_result:
+        for vertex, result in vertice_processed_results:
             executor.report(vertex, result)
-
-            if abort_on_failure and not good:
-                stop_processing = True
-                executor.abort(vertice_processing)
-            if stop_processing:
-                break
 
             for v_to in dag.successors(vertex):
                 executor.deliver(v_to, result)

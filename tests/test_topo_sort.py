@@ -25,22 +25,22 @@ def check_sorted_vertice(vertice_sorted, dag):
     assert vertice_sorted.index(3)   < vertice_sorted.index('5ef')
     assert vertice_sorted.index(678) < vertice_sorted.index(679)
 
-def test_topo_sort_by_single_selector(dag):
-    for i in range(100):
-        vertice_sorted = dag_run(dag, selector=SingleSelector())
-        check_sorted_vertice(vertice_sorted, dag)
+@pytest.mark.parametrize('i', range(64))
+def test_topo_sort_by_single_selector(i, dag):
+    vertice_sorted = dag_run(dag, selector=SingleSelector())
+    check_sorted_vertice(vertice_sorted, dag)
 
-def test_topo_sort_by_full_selector(dag):
-    for i in range(100):
-        vertice_sorted = dag_run(dag, selector=FullSelector())
-        check_sorted_vertice(vertice_sorted, dag)
+@pytest.mark.parametrize('i', range(64))
+def test_topo_sort_by_full_selector(i, dag):
+    vertice_sorted = dag_run(dag, selector=FullSelector())
+    check_sorted_vertice(vertice_sorted, dag)
 
-def test_topo_sort_by_random_selector(dag):
-    for i in range(100):
-        vertice_sorted = dag_run(dag, selector=RandomSelector())
-        check_sorted_vertice(vertice_sorted, dag)
+@pytest.mark.parametrize('i', range(64))
+def test_topo_sort_by_random_selector(i, dag):
+    vertice_sorted = dag_run(dag, selector=RandomSelector())
+    check_sorted_vertice(vertice_sorted, dag)
 
-def test_topo_sort_by_shuffle_selector(dag):
-    for i in range(100):
-        vertice_sorted = dag_run(dag, selector=ShuffleSelector())
-        check_sorted_vertice(vertice_sorted, dag)
+@pytest.mark.parametrize('i', range(64))
+def test_topo_sort_by_shuffle_selector(i, dag):
+    vertice_sorted = dag_run(dag, selector=ShuffleSelector())
+    check_sorted_vertice(vertice_sorted, dag)
