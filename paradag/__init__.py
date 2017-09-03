@@ -49,7 +49,7 @@ class Dag(object):
     def __validate_vertex(self, *vertice):
         for vertex in vertice:
             if vertex not in self.__data.vertice():
-                raise DagVertexNotFoundError('Vertex "%s" does not belong to DAG' % vertex)
+                raise DagVertexNotFoundError('Vertex "{0}" does not belong to DAG'.format(vertex))
 
     def __has_path_to(self, v_from, v_to):
         if v_from == v_to:
@@ -72,13 +72,13 @@ class Dag(object):
 
         for v_to in v_tos:
             if self.__has_path_to(v_to, v_from):
-                raise DagCycleError('Cycle if add edge from "%s" to "%s"' % (v_from, v_to))
+                raise DagCycleError('Cycle if add edge from "{0}" to "{1}"'.format(v_from, v_to))
             self.__data.add_edge(v_from, v_to)
 
     def remove_edge(self, v_from, v_to):
         self.__validate_vertex(v_from, v_to)
         if v_to not in self.__data.successors(v_from):
-            raise DagEdgeNotFoundError('Edge not found from "%s" to "%s"' % (v_from, v_to))
+            raise DagEdgeNotFoundError('Edge not found from "{0}" to "{1}"'.format(v_from, v_to))
 
         self.__data.remove_edge(v_from, v_to)
 
