@@ -164,6 +164,7 @@ class NullExecutor(object):
         pass
 
 
+# TODO: Use Vertice as core. Processor, Selector and Executor should all surround Vertice
 def dag_run(dag, selector=None, processor=None, executor=None):
     if selector is None:
         selector = FullSelector()
