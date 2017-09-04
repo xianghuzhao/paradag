@@ -11,6 +11,11 @@ python:
   - "pypy"
   - "pypy3"
 
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+.*)?$/
+
 install:
   - pip install -e .
 
