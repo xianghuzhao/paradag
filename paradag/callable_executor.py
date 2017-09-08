@@ -7,8 +7,13 @@ class CallableExecutor(NullExecutor):
     def execute(self, param_vertex):
         return param_vertex()
 
-    def report(self, vertex, result):
-        if isinstance(result, Exception):
-            print('Vertex {0} finished with exception: {1}'.format(vertex, result))
-        else:
-            print('Vertex {0} finished with result: {1}'.format(vertex, result))
+    def report_start(self, vertice):
+        for vertex in vertice:
+            print('Vertex {0} start'.format(vertex))
+
+    def report_finish(self, vertice_results):
+        for vertex, result in vertice_results:
+            if isinstance(result, Exception):
+                print('Vertex {0} finished with exception: {1}'.format(vertex, result))
+            else:
+                print('Vertex {0} finished with result: {1}'.format(vertex, result))

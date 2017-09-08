@@ -154,7 +154,10 @@ class NullExecutor(object):
     def execute(self, param_vertex):
         return None
 
-    def report(self, vertex, result):
+    def report_start(self, vertice):
+        pass
+
+    def report_finish(self, vertice_results):
         pass
 
     def deliver(self, vertex, result):
@@ -183,8 +186,10 @@ def dag_run(dag, selector=None, processor=None, executor=None):
 
     while vertice_zero_indegree:
         vertice_to_run = selector.select(vertice_processing, vertice_zero_indegree-vertice_processing)
+        executor.report_start(vertice_to_run)
 
         vertice_processed_results = processor.process(vertice_to_run, executor)
+        executor.report_finish(vertice_processed_results)
         vertice_processed = [result[0] for result in vertice_processed_results]
 
         vertice_processing |= set(vertice_to_run)
@@ -194,8 +199,6 @@ def dag_run(dag, selector=None, processor=None, executor=None):
         vertice_zero_indegree -= set(vertice_processed)
 
         for vertex, result in vertice_processed_results:
-            executor.report(vertex, result)
-
             for v_to in dag.successors(vertex):
                 executor.deliver(v_to, result)
 
