@@ -13,7 +13,4 @@ class CallableExecutor(NullExecutor):
 
     def report_finish(self, vertice_results):
         for vertex, result in vertice_results:
-            if isinstance(result, Exception):
-                print('Vertex {0} finished with exception: {1}'.format(vertex, result))
-            else:
-                print('Vertex {0} finished with result: {1}'.format(vertex, result))
+            print('Vertex {0} finished with result: {1}'.format(vertex, result))
