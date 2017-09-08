@@ -147,6 +147,7 @@ class NullProcessor(object):
         return [(vertex, None) for vertex in vertice]
 
 
+# TODO: report_*, deliver, abort should be optional
 class NullExecutor(object):
     def param(self, vertex):
         return None
