@@ -191,6 +191,7 @@ def dag_run(dag, selector=None, processor=None, executor=None):
     while vertice_zero_indegree:
         vertice_to_run = selector.select(vertice_processing, vertice_zero_indegree-vertice_processing)
         executor.report_start(vertice_to_run)
+        executor.report_running(set(vertice_to_run) | vertice_processing)
 
         vertice_processed_results = processor.process(vertice_to_run, executor)
         executor.report_finish(vertice_processed_results)
@@ -198,7 +199,6 @@ def dag_run(dag, selector=None, processor=None, executor=None):
 
         vertice_processing |= set(vertice_to_run)
         vertice_processing -= set(vertice_processed)
-        executor.report_running(vertice_processing)
 
         vertice_final += vertice_processed
         vertice_zero_indegree -= set(vertice_processed)
