@@ -15,7 +15,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 setup(
     name = 'paradag',
     version = version,
-    description = 'A robust DAG implementation',
+    description = 'A robust DAG implementation for parallel programming',
     long_description = long_description,
     url = 'https://github.com/xianghuzhao/paradag',
     author = 'Xianghu Zhao',
@@ -43,7 +43,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 
-    keywords = 'DAG',
+    keywords = ['DAG', 'parallel programming'],
     packages = find_packages(exclude=[]),
     include_package_data = True,
     tests_require = [
