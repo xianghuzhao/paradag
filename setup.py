@@ -23,7 +23,7 @@ setup(
     license = 'MIT',
 
     classifiers = [
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
 
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Python Modules',
