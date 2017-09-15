@@ -17,3 +17,6 @@ A robust DAG package for easy parallel execution.
 
 paradag is implemented in pure python and totally independent of any
 other packages.
+
+Try to make execute as simple as possible. Extra operation could be put
+in `report_*` functions, like logging.
