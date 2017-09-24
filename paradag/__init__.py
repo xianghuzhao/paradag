@@ -159,6 +159,7 @@ class NullExecutor(object):
     def before_execute(self, vertex):
         return True
 
+    # TODO: There is the possibility that execute is not needed, only report_* functions are enough. Like topo sort,...
     def execute(self, param_vertex):
         return None
 
