@@ -152,6 +152,13 @@ class NullExecutor(object):
     def param(self, vertex):
         return None
 
+    # TODO: add before in processor
+    # TODO: return False will not continue execute
+    # TODO: not adding after_execute because it could be done in report_finish
+    # TODO: This logic is common for all processors, try to find out how to implement it outside processor
+    def before_execute(self, vertex):
+        return True
+
     def execute(self, param_vertex):
         return None
 
