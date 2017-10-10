@@ -20,3 +20,14 @@ other packages.
 
 Try to make execute as simple as possible. Extra operation could be put
 in `report_*` functions, like logging.
+
+
+Paralell Execution
+------------------
+
+It is OK to use `MultiThreadProcessor` if your vertices are running
+I/O a lot. Due to GIL, you need `MultiProcessingProcessor` if your
+vertices contain CPU consumption parts with python code.
+
+One exception is that if you are running vertices which invoke
+subprocesses, it would be OK with `MultiThreadProcessor`.
