@@ -1,6 +1,10 @@
 paradag
 =======
 
+.. image:: https://api.codacy.com/project/badge/Grade/99f150dad987407a9c9a264ad5951e8a
+   :alt: Codacy Badge
+   :target: https://www.codacy.com/app/xianghuzhao/paradag?utm_source=github.com&utm_medium=referral&utm_content=xianghuzhao/paradag&utm_campaign=badger
+
 .. image:: https://img.shields.io/pypi/v/paradag.svg
    :target: https://pypi.python.org/pypi/paradag
    :alt: PyPI
