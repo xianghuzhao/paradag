@@ -153,14 +153,21 @@ In case the result for one task should be used for its descendants,
 
 ```python
 class CustomExecutor:
+    def __init__(self):
+        self.__level = {}
+
     def param(self, vertex):
-        return vertex
+        return (vertex, self.__level.get(vertex, 0))
 
     def execute(self, param):
-        print('Executing:', param)
+        return param[1] + 1
 
-    def deliver(self, v_to, result):
-        pass
+    def report_finish(self, vertice_result):
+        for vertex, result in vertice_result:
+            print('Vertex {0} finished, level: {1}'.format(vertex, result))
+
+    def deliver(self, vertex, result):
+        self.__level[vertex] = result
 ```
 
 The result from parent will be delivered to the vertex before execution.
