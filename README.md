@@ -48,8 +48,7 @@ dag.add_edge(123, 'abcde')                  # 123 -> 'abcde'
 dag.add_edge('abcde', ('a', 'b', 3), vtx)   # 'abcde' -> ('a', 'b', 3), 'abcde' -> vtx
 ```
 
-`add_edge` accepts one vertex as the predecessor and
-one or more vertice as the successors.
+`add_edge` accepts one starting vertex and one or more ending vertice.
 Please pay attention not to make a cycle with `add_edge`,
 which will raise a `DAGCycleError`.
 
@@ -85,6 +84,8 @@ class CustomExecutor:
 
 print(dag_run(dag, processor=SequentialProcessor(), executor=CustomExecutor()))
 ```
+
+`dag_run` is the core function for task scheduling.
 
 
 ## Run tasks in parallel
@@ -183,6 +184,8 @@ the result of topological sorting.
 A simple topological sorting without any execution:
 
 ```python
+from paradag import SingleSelector, RandomSelector, ShuffleSelector
+
 dag = DAG()
 dag.add_vertex(1, 2, 3, 4, 5)
 dag.add_edge(1, 4)
