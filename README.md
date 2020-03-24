@@ -157,10 +157,10 @@ class CustomExecutor:
         self.__level = {}
 
     def param(self, vertex):
-        return (vertex, self.__level.get(vertex, 0))
+        return self.__level.get(vertex, 0)
 
     def execute(self, param):
-        return param[1] + 1
+        return param + 1
 
     def report_finish(self, vertice_result):
         for vertex, result in vertice_result:
