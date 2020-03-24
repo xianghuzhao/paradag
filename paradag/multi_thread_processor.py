@@ -1,3 +1,5 @@
+'''A processor which will run the executors in parallel'''
+
 import threading
 
 try:
@@ -8,50 +10,56 @@ except ImportError:
 from paradag import VertexExecutionError
 
 
-def dag_thread(dag_queue, vertex, executor, param):
+def dag_thread(dag_queue, vertex, execute_func, param):
+    '''Thread function for parallel execution'''
     try:
-        dag_queue.put((vertex, executor.execute(param)))
-    except Exception as e:
+        dag_queue.put((vertex, execute_func(param)))
+    except Exception as e:      # pylint: disable=broad-except
         dag_queue.put((vertex, e))
 
 
 class MultiThreadProcessor(object):
+    '''A processor which will run the executions in parallel'''
+
     def __init__(self, timeout=None):
         self.__timeout = timeout
 
         self.__dag_threads = {}
         self.__dag_queue = Queue()
 
-    def __start_threads(self, vertice, executor):
-        for vertex in vertice:
-            if vertex not in self.__dag_threads:
-                param_vertex = executor.param(vertex)
-                args = [self.__dag_queue, vertex, executor, param_vertex]
-                self.__dag_threads[vertex] = threading.Thread(target=dag_thread, args=args)
-                self.__dag_threads[vertex].start()
+    def __start_threads(self, vertice_with_param, execute_func):
+        for vtx, param in vertice_with_param:
+            if vtx not in self.__dag_threads:
+                args = [self.__dag_queue, vtx, execute_func, param]
+                self.__dag_threads[vtx] = threading.Thread(
+                    target=dag_thread, args=args)
+                self.__dag_threads[vtx].start()
 
-    def __wait_threads(self, executor):
+    def __wait_threads(self):
+        if not self.__dag_threads:
+            return []
+
         try:
             item = self.__dag_queue.get(timeout=self.__timeout)
             self.__dag_threads[item[0]].join()
             del self.__dag_threads[item[0]]
 
             if isinstance(item[1], Exception):
-                self.__clear_threads(executor)
-                raise VertexExecutionError('Vertex "{0}" execution error: {1}'.format(item[0], item[1]))
+                raise VertexExecutionError(
+                    'Vertex "{0}" execution error: {1}'.format(item[0], item[1]))
 
             return [item]
         except Empty:
             return []
 
-    def __clear_threads(self, executor):
-        executor.abort(set(self.__dag_threads.keys()))
+    def process(self, vertice_with_param, execute_func):
+        '''Process vertice in parallel'''
+        self.__start_threads(vertice_with_param, execute_func)
+        return self.__wait_threads()
 
+    def abort(self):
+        '''Quit all the threads'''
         while self.__dag_threads:
             item = self.__dag_queue.get()
             self.__dag_threads[item[0]].join()
             del self.__dag_threads[item[0]]
-
-    def process(self, vertice, executor):
-        self.__start_threads(vertice, executor)
-        return self.__wait_threads(executor)

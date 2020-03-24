@@ -1,28 +1,30 @@
-import sys
+'''setup information for paradag'''
+
 import os
 
 from setuptools import setup, find_packages
 
 
-here = os.path.abspath(os.path.dirname(__file__))
+HERE = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'paradag', 'VERSION')) as version_file:
-    version = version_file.read().strip()
+with open(os.path.join(HERE, 'paradag', 'VERSION')) as version_file:
+    VERSION = version_file.read().strip()
 
-with open(os.path.join(here, 'README.rst')) as f:
-    long_description = f.read()
+with open(os.path.join(HERE, 'README.md')) as f:
+    LONG_DESCRIPTION = f.read()
 
 setup(
-    name = 'paradag',
-    version = version,
-    description = 'A robust DAG implementation for parallel programming',
-    long_description = long_description,
-    url = 'https://github.com/xianghuzhao/paradag',
-    author = 'Xianghu Zhao',
-    author_email = 'xianghuzhao@gmail.com',
-    license = 'MIT',
+    name='paradag',
+    version=VERSION,
+    description='A robust DAG implementation for parallel programming',
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
+    url='https://github.com/xianghuzhao/paradag',
+    author='Xianghu Zhao',
+    author_email='xianghuzhao@gmail.com',
+    license='MIT',
 
-    classifiers = [
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
 
         'Intended Audience :: Developers',
@@ -39,14 +41,16 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 
-    keywords = ['DAG', 'parallel programming'],
-    packages = find_packages(exclude=[]),
-    include_package_data = True,
-    tests_require = [
+    keywords=['DAG', 'parallel programming'],
+    packages=find_packages(exclude=[]),
+    include_package_data=True,
+    tests_require=[
         'pytest',
     ],
 )

@@ -1,8 +1,9 @@
-import pytest
+# pylint: disable=missing-docstring,invalid-name,redefined-outer-name,unused-argument
 
 import datetime
+import pytest
 
-from paradag import Dag
+from paradag import DAG
 from paradag import dag_run
 from paradag import VertexExecutionError
 from paradag import ShuffleSelector
@@ -35,7 +36,7 @@ class SimpleCallable(object):
 
 @pytest.fixture(scope='function')
 def dag_callable():
-    d = Dag()
+    d = DAG()
     s1 = SimpleCallable(1)
     s2 = SimpleCallable(2)
     s3 = SimpleCallable(4)
@@ -46,6 +47,7 @@ def dag_callable():
     d.add_edge(s2, s4)
     d.add_edge(s3, s4)
     return (d, s1, s2, s3, s4, s5)
+
 
 def check_callable(vertice_sorted, dag_tuple):
     dag = dag_tuple
@@ -60,22 +62,28 @@ def check_callable(vertice_sorted, dag_tuple):
     assert dag[2].call_time <= dag[4].call_time
     assert dag[3].call_time <= dag[4].call_time
 
+
 @pytest.mark.parametrize('i', range(64))
 def test_dag_run_sequential_processor(i, dag_callable):
     vertice_sorted = dag_run(dag_callable[0],
-            selector=ShuffleSelector(), processor=SequentialProcessor(), executor=CallableExecutor())
+                             selector=ShuffleSelector(),
+                             processor=SequentialProcessor(),
+                             executor=CallableExecutor())
     check_callable(vertice_sorted, dag_callable)
+
 
 @pytest.mark.parametrize('i', range(64))
 def test_dag_run_multi_thread_processor(i, dag_callable):
     vertice_sorted = dag_run(dag_callable[0],
-            selector=ShuffleSelector(), processor=MultiThreadProcessor(), executor=CallableExecutor())
+                             selector=ShuffleSelector(),
+                             processor=MultiThreadProcessor(),
+                             executor=CallableExecutor())
     check_callable(vertice_sorted, dag_callable)
 
 
 @pytest.fixture(scope='function')
 def dag_callable_with_exception():
-    d = Dag()
+    d = DAG()
     s1 = SimpleCallable(1)
     s2 = SimpleCallable(2)
     s3 = SimpleCallable(0)
@@ -87,22 +95,29 @@ def dag_callable_with_exception():
     d.add_edge(s3, s4)
     return (d, s1, s2, s3, s4, s5)
 
+
 def check_callable_with_exception(dag_tuple):
     dag = dag_tuple
     assert dag[1].result == 1024
     assert dag[3].result is None
     assert dag[4].result is None
 
+
 @pytest.mark.parametrize('i', range(64))
 def test_dag_run_sequential_processor_with_exception(i, dag_callable_with_exception):
     with pytest.raises(VertexExecutionError):
         dag_run(dag_callable_with_exception[0],
-                selector=ShuffleSelector(), processor=SequentialProcessor(), executor=CallableExecutor())
+                selector=ShuffleSelector(),
+                processor=SequentialProcessor(),
+                executor=CallableExecutor())
     check_callable_with_exception(dag_callable_with_exception)
+
 
 @pytest.mark.parametrize('i', range(64))
 def test_dag_run_multi_thread_processor_with_exception(i, dag_callable_with_exception):
     with pytest.raises(VertexExecutionError):
         dag_run(dag_callable_with_exception[0],
-                selector=ShuffleSelector(), processor=MultiThreadProcessor(), executor=CallableExecutor())
+                selector=ShuffleSelector(),
+                processor=MultiThreadProcessor(),
+                executor=CallableExecutor())
     check_callable_with_exception(dag_callable_with_exception)
