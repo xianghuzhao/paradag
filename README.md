@@ -73,7 +73,7 @@ The executor handles the real execution for each vertex.
 
 ```python
 from paradag import dag_run
-from paradag.sequential_processor import SequentialProcessor
+from paradag import SequentialProcessor
 
 class CustomExecutor:
     def param(self, vertex):
@@ -94,7 +94,7 @@ Run tasks in parallel is quite similar, while only change the processor
 to `MultiThreadProcessor`.
 
 ```python
-from paradag.multi_thread_processor import MultiThreadProcessor
+from paradag import MultiThreadProcessor
 
 dag_run(dag, processor=MultiThreadProcessor(), executor=CustomExecutor())
 ```

@@ -1,6 +1,6 @@
 '''A processor which will run the executors in sequence'''
 
-from paradag import VertexExecutionError
+from paradag.error import VertexExecutionError
 
 
 class SequentialProcessor(object):

@@ -7,9 +7,7 @@ from paradag import DAG
 from paradag import dag_run
 from paradag import VertexExecutionError
 from paradag import ShuffleSelector
-from paradag.callable_executor import CallableExecutor
-from paradag.sequential_processor import SequentialProcessor
-from paradag.multi_thread_processor import MultiThreadProcessor
+from paradag import CallableExecutor, SequentialProcessor, MultiThreadProcessor
 
 
 class SimpleCallable(object):

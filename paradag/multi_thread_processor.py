@@ -7,10 +7,10 @@ try:
 except ImportError:
     from queue import Queue, Empty
 
-from paradag import VertexExecutionError
+from paradag.error import VertexExecutionError
 
 
-def dag_thread(dag_queue, vertex, execute_func, param):
+def _dag_execution(dag_queue, vertex, execute_func, param):
     '''Thread function for parallel execution'''
     try:
         dag_queue.put((vertex, execute_func(param)))
@@ -32,7 +32,7 @@ class MultiThreadProcessor(object):
             if vtx not in self.__dag_threads:
                 args = [self.__dag_queue, vtx, execute_func, param]
                 self.__dag_threads[vtx] = threading.Thread(
-                    target=dag_thread, args=args)
+                    target=_dag_execution, args=args)
                 self.__dag_threads[vtx].start()
 
     def __wait_threads(self):
