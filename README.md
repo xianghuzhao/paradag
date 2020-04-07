@@ -1,6 +1,6 @@
 # paradag
 
-[![PyPI](https://badge.fury.io/py/paradag.svg)](https://badge.fury.io/py/paradag)
+[![PyPI](https://badge.fury.io/py/paradag.svg)](https://pypi.org/project/paradag/)
 [![Travis CI Status](https://travis-ci.org/xianghuzhao/paradag.svg?branch=master)](https://travis-ci.org/xianghuzhao/paradag)
 [![Code Climate](https://codeclimate.com/github/xianghuzhao/paradag/badges/gpa.svg)](https://codeclimate.com/github/xianghuzhao/paradag)
 
