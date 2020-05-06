@@ -47,9 +47,9 @@ def dag_callable():
     return (d, s1, s2, s3, s4, s5)
 
 
-def check_callable(vertice_sorted, dag_tuple):
+def check_callable(vertices_sorted, dag_tuple):
     dag = dag_tuple
-    assert set(vertice_sorted) == dag[0].vertice()
+    assert set(vertices_sorted) == dag[0].vertices()
     assert dag[1].result == 1024
     assert dag[2].result == 512
     assert dag[3].result == 256
@@ -63,20 +63,20 @@ def check_callable(vertice_sorted, dag_tuple):
 
 @pytest.mark.parametrize('i', range(64))
 def test_dag_run_sequential_processor(i, dag_callable):
-    vertice_sorted = dag_run(dag_callable[0],
+    vertices_sorted = dag_run(dag_callable[0],
                              selector=ShuffleSelector(),
                              processor=SequentialProcessor(),
                              executor=CallableExecutor())
-    check_callable(vertice_sorted, dag_callable)
+    check_callable(vertices_sorted, dag_callable)
 
 
 @pytest.mark.parametrize('i', range(64))
 def test_dag_run_multi_thread_processor(i, dag_callable):
-    vertice_sorted = dag_run(dag_callable[0],
+    vertices_sorted = dag_run(dag_callable[0],
                              selector=ShuffleSelector(),
                              processor=MultiThreadProcessor(),
                              executor=CallableExecutor())
-    check_callable(vertice_sorted, dag_callable)
+    check_callable(vertices_sorted, dag_callable)
 
 
 @pytest.fixture(scope='function')

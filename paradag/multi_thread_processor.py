@@ -27,8 +27,8 @@ class MultiThreadProcessor(object):
         self.__dag_threads = {}
         self.__dag_queue = Queue()
 
-    def __start_threads(self, vertice_with_param, execute_func):
-        for vtx, param in vertice_with_param:
+    def __start_threads(self, vertices_with_param, execute_func):
+        for vtx, param in vertices_with_param:
             if vtx not in self.__dag_threads:
                 args = [self.__dag_queue, vtx, execute_func, param]
                 self.__dag_threads[vtx] = threading.Thread(
@@ -52,9 +52,9 @@ class MultiThreadProcessor(object):
         except Empty:
             return []
 
-    def process(self, vertice_with_param, execute_func):
-        '''Process vertice in parallel'''
-        self.__start_threads(vertice_with_param, execute_func)
+    def process(self, vertices_with_param, execute_func):
+        '''Process vertices in parallel'''
+        self.__start_threads(vertices_with_param, execute_func)
         return self.__wait_threads()
 
     def abort(self):

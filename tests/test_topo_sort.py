@@ -19,36 +19,36 @@ def dag():
     return d
 
 
-def check_sorted_vertice(vertice_sorted, dag):
-    assert set(vertice_sorted) == dag.vertice()
-    assert vertice_sorted.index(3) < vertice_sorted.index('c')
-    assert vertice_sorted.index('c') < vertice_sorted.index('5ef')
-    assert vertice_sorted.index('c') < vertice_sorted.index(15)
-    assert vertice_sorted.index('c') < vertice_sorted.index('sg')
-    assert vertice_sorted.index(678) < vertice_sorted.index(679)
-    assert vertice_sorted.index(3) < vertice_sorted.index('5ef')
-    assert vertice_sorted.index(678) < vertice_sorted.index(679)
+def check_sorted_vertices(vertices_sorted, dag):
+    assert set(vertices_sorted) == dag.vertices()
+    assert vertices_sorted.index(3) < vertices_sorted.index('c')
+    assert vertices_sorted.index('c') < vertices_sorted.index('5ef')
+    assert vertices_sorted.index('c') < vertices_sorted.index(15)
+    assert vertices_sorted.index('c') < vertices_sorted.index('sg')
+    assert vertices_sorted.index(678) < vertices_sorted.index(679)
+    assert vertices_sorted.index(3) < vertices_sorted.index('5ef')
+    assert vertices_sorted.index(678) < vertices_sorted.index(679)
 
 
 @pytest.mark.parametrize('i', range(64))
 def test_topo_sort_by_single_selector(i, dag):
-    vertice_sorted = dag_run(dag, selector=SingleSelector())
-    check_sorted_vertice(vertice_sorted, dag)
+    vertices_sorted = dag_run(dag, selector=SingleSelector())
+    check_sorted_vertices(vertices_sorted, dag)
 
 
 @pytest.mark.parametrize('i', range(64))
 def test_topo_sort_by_full_selector(i, dag):
-    vertice_sorted = dag_run(dag, selector=FullSelector())
-    check_sorted_vertice(vertice_sorted, dag)
+    vertices_sorted = dag_run(dag, selector=FullSelector())
+    check_sorted_vertices(vertices_sorted, dag)
 
 
 @pytest.mark.parametrize('i', range(64))
 def test_topo_sort_by_random_selector(i, dag):
-    vertice_sorted = dag_run(dag, selector=RandomSelector())
-    check_sorted_vertice(vertice_sorted, dag)
+    vertices_sorted = dag_run(dag, selector=RandomSelector())
+    check_sorted_vertices(vertices_sorted, dag)
 
 
 @pytest.mark.parametrize('i', range(64))
 def test_topo_sort_by_shuffle_selector(i, dag):
-    vertice_sorted = dag_run(dag, selector=ShuffleSelector())
-    check_sorted_vertice(vertice_sorted, dag)
+    vertices_sorted = dag_run(dag, selector=ShuffleSelector())
+    check_sorted_vertices(vertices_sorted, dag)

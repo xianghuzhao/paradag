@@ -48,7 +48,7 @@ dag.add_edge(123, 'abcde')                  # 123 -> 'abcde'
 dag.add_edge('abcde', ('a', 'b', 3), vtx)   # 'abcde' -> ('a', 'b', 3), 'abcde' -> vtx
 ```
 
-`add_edge` accepts one starting vertex and one or more ending vertice.
+`add_edge` accepts one starting vertex and one or more ending vertices.
 Please pay attention not to make a cycle with `add_edge`,
 which will raise a `DAGCycleError`.
 
@@ -133,14 +133,14 @@ class CustomExecutor:
     def execute(self, param):
         print('Executing:', param)
 
-    def report_start(self, vertice):
-        print('Start to run:', vertice)
+    def report_start(self, vertices):
+        print('Start to run:', vertices)
 
-    def report_running(self, vertice):
-        print('Current running:', vertice)
+    def report_running(self, vertices):
+        print('Current running:', vertices)
 
-    def report_finish(self, vertice_result):
-        for vertex, result in vertice_result:
+    def report_finish(self, vertices_result):
+        for vertex, result in vertices_result:
             print('Finished running {0} with result: {1}'.format(vertex, result))
 
 dag_run(dag, processor=MultiThreadProcessor(), executor=CustomExecutor())
@@ -163,8 +163,8 @@ class CustomExecutor:
     def execute(self, param):
         return param + 1
 
-    def report_finish(self, vertice_result):
-        for vertex, result in vertice_result:
+    def report_finish(self, vertices_result):
+        for vertex, result in vertices_result:
             print('Vertex {0} finished, level: {1}'.format(vertex, result))
 
     def deliver(self, vertex, result):

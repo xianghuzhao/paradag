@@ -15,8 +15,8 @@ class _dagData(object):
         self.__graph = {}
         self.__graph_reverse = {}
 
-    def vertice(self):
-        '''Get the vertice list'''
+    def vertices(self):
+        '''Get the vertices list'''
         return set(self.__graph.keys())
 
     def add_vertex(self, vertex):
@@ -50,9 +50,9 @@ class DAG(object):
     def __init__(self):
         self.__data = _dagData()
 
-    def __validate_vertex(self, *vertice):
-        for vtx in vertice:
-            if vtx not in self.__data.vertice():
+    def __validate_vertex(self, *vertices):
+        for vtx in vertices:
+            if vtx not in self.__data.vertices():
                 raise DAGVertexNotFoundError(
                     'Vertex "{0}" does not belong to DAG'.format(vtx))
 
@@ -64,13 +64,13 @@ class DAG(object):
                 return True
         return False
 
-    def vertice(self):
-        '''Get the vertice list'''
-        return self.__data.vertice()
+    def vertices(self):
+        '''Get the vertices list'''
+        return self.__data.vertices()
 
-    def add_vertex(self, *vertice):
-        '''Add one or more vertice'''
-        for vtx in vertice:
+    def add_vertex(self, *vertices):
+        '''Add one or more vertices'''
+        for vtx in vertices:
             self.__data.add_vertex(vtx)
 
     def add_edge(self, v_from, *v_tos):
@@ -93,13 +93,13 @@ class DAG(object):
         self.__data.remove_edge(v_from, v_to)
 
     def vertex_size(self):
-        '''Get the number of vertice'''
-        return len(self.__data.vertice())
+        '''Get the number of vertices'''
+        return len(self.__data.vertices())
 
     def edge_size(self):
         '''Get the number of edges'''
         size = 0
-        for vtx in self.__data.vertice():
+        for vtx in self.__data.vertices():
             size += self.outdegree(vtx)
         return size
 
@@ -123,17 +123,17 @@ class DAG(object):
 
     def __endpoints(self, degree_callback):
         endpoints = set()
-        for vtx in self.__data.vertice():
+        for vtx in self.__data.vertices():
             if degree_callback(vtx) == 0:
                 endpoints.add(vtx)
         return endpoints
 
     def all_starts(self):
-        '''Get all the starting vertice'''
+        '''Get all the starting vertices'''
         return self.__endpoints(self.indegree)
 
     def all_terminals(self):
-        '''Get all the terminating vertice'''
+        '''Get all the terminating vertices'''
         return self.__endpoints(self.outdegree)
 
 
@@ -146,10 +146,10 @@ class SingleSelector(object):
 
 
 class FullSelector(object):
-    '''A selector selects all the idle vertice'''
+    '''A selector selects all the idle vertices'''
 
     def select(self, _, idle):
-        '''Select all the idle vertice'''
+        '''Select all the idle vertices'''
         return list(idle)
 
 
@@ -162,10 +162,10 @@ class RandomSelector(object):
 
 
 class ShuffleSelector(object):
-    '''A selector selects all the idle vertice with shuffled order'''
+    '''A selector selects all the idle vertices with shuffled order'''
 
     def select(self, _, idle):
-        '''Selects all the idle vertice with shuffled order'''
+        '''Selects all the idle vertices with shuffled order'''
         idle_list = list(idle)
         random.shuffle(idle_list)
         return idle_list
@@ -174,9 +174,9 @@ class ShuffleSelector(object):
 class NullProcessor(object):
     '''A processor which ignores all the execution'''
 
-    def process(self, vertice_with_param, _):
-        '''Return all vertice with result None'''
-        return [(vtx, None) for vtx, _ in vertice_with_param]
+    def process(self, vertices_with_param, _):
+        '''Return all vertices with result None'''
+        return [(vtx, None) for vtx, _ in vertices_with_param]
 
 
 class NullExecutor(object):
@@ -195,16 +195,16 @@ def _call_method(instance, method, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-def _process_vertice(vertice_to_run, vertice_running, processor, executor):
+def _process_vertices(vertices_to_run, vertices_running, processor, executor):
     def execute_func(param):
         return _call_method(executor, 'execute', param)
 
-    vertice_with_param = [(vtx, _call_method(executor, 'param', vtx))
-                          for vtx in vertice_to_run]
+    vertices_with_param = [(vtx, _call_method(executor, 'param', vtx))
+                           for vtx in vertices_to_run]
     try:
-        return processor.process(vertice_with_param, execute_func)
+        return processor.process(vertices_with_param, execute_func)
     except VertexExecutionError:
-        _call_method(executor, 'abort', vertice_running)
+        _call_method(executor, 'abort', vertices_running)
         _call_method(processor, 'abort')
         raise
 
@@ -213,30 +213,30 @@ def dag_run(dag, selector=FullSelector(), processor=NullProcessor(), executor=Nu
     '''Run tasks according to DAG'''
 
     indegree_dict = {}
-    for vtx in dag.vertice():
+    for vtx in dag.vertices():
         indegree_dict[vtx] = dag.indegree(vtx)
 
-    vertice_final = []
-    vertice_running = set()
-    vertice_zero_indegree = dag.all_starts()
+    vertices_final = []
+    vertices_running = set()
+    vertices_zero_indegree = dag.all_starts()
 
-    while vertice_zero_indegree:
-        vertice_idle = vertice_zero_indegree-vertice_running
-        vertice_to_run = selector.select(vertice_running, vertice_idle)
-        _call_method(executor, 'report_start', vertice_to_run)
+    while vertices_zero_indegree:
+        vertices_idle = vertices_zero_indegree-vertices_running
+        vertices_to_run = selector.select(vertices_running, vertices_idle)
+        _call_method(executor, 'report_start', vertices_to_run)
 
-        vertice_running |= set(vertice_to_run)
-        _call_method(executor, 'report_running', vertice_running)
+        vertices_running |= set(vertices_to_run)
+        _call_method(executor, 'report_running', vertices_running)
 
-        processed_results = _process_vertice(
-            vertice_to_run, vertice_running, processor, executor)
+        processed_results = _process_vertices(
+            vertices_to_run, vertices_running, processor, executor)
         _call_method(executor, 'report_finish', processed_results)
 
-        vertice_processed = [result[0] for result in processed_results]
-        vertice_running -= set(vertice_processed)
+        vertices_processed = [result[0] for result in processed_results]
+        vertices_running -= set(vertices_processed)
 
-        vertice_final += vertice_processed
-        vertice_zero_indegree -= set(vertice_processed)
+        vertices_final += vertices_processed
+        vertices_zero_indegree -= set(vertices_processed)
 
         for vtx, result in processed_results:
             for v_to in dag.successors(vtx):
@@ -244,6 +244,6 @@ def dag_run(dag, selector=FullSelector(), processor=NullProcessor(), executor=Nu
 
                 indegree_dict[v_to] -= 1
                 if indegree_dict[v_to] == 0:
-                    vertice_zero_indegree.add(v_to)
+                    vertices_zero_indegree.add(v_to)
 
-    return vertice_final
+    return vertices_final

@@ -1,8 +1,8 @@
-'''An example executor where the vertice are callable'''
+'''An example executor where the vertices are callable'''
 
 
 class CallableExecutor(object):
-    '''An example executor where the vertice are callable'''
+    '''An example executor where the vertices are callable'''
 
     def param(self, vertex):
         '''Use vertex as param'''
@@ -12,13 +12,13 @@ class CallableExecutor(object):
         '''Call the vertex'''
         return param_vertex()
 
-    def report_start(self, vertice):
+    def report_start(self, vertices):
         '''Report the start status'''
-        for vertex in vertice:
+        for vertex in vertices:
             print('Vertex {0} start'.format(vertex))
 
-    def report_finish(self, vertice_results):
+    def report_finish(self, vertices_results):
         '''Report the finish status'''
-        for vertex, result in vertice_results:
+        for vertex, result in vertices_results:
             print('Vertex {0} finished with result: {1}'.format(
                 vertex, result))

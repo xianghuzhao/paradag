@@ -6,10 +6,10 @@ from paradag.error import VertexExecutionError
 class SequentialProcessor(object):
     '''A processor which will run the executions in sequence'''
 
-    def process(self, vertice_with_param, execute_func):
-        '''Process vertice in sequence'''
+    def process(self, vertices_with_param, execute_func):
+        '''Process vertices in sequence'''
         results = []
-        for vtx, param in vertice_with_param:
+        for vtx, param in vertices_with_param:
             try:
                 result = execute_func(param)
             except Exception as e:
