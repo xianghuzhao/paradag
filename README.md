@@ -24,4 +24,10 @@ and tasks without any connection could run in parallel.
 pip install -U git+https://github.com/0hsn/paradag.git@master
 ```
 
+## Usage
 
+Read the [usage docs](docs/usage.md).
+
+Create issue or ask a qustion https://github.com/0hsn/paradag/issues.
+
+Follow the [common convention](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project) for contribuiton
