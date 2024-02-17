@@ -19,7 +19,7 @@ and tasks without any connection could run in parallel.
 ## Installation
 
 ```shell
-$ pip install paradag
+pip install -U git+https://github.com/0hsn/paradag.git@master
 ```
 
 
